@@ -77,7 +77,7 @@
          (string= mod1 mod2))))
 
 (defun pyimport--insert-import (line)
-  "Insert IMPORT, a line of python imports, in the current buffer."
+  "Insert LINE, a python import statement, in the current buffer."
   (let* ((current-lines (pyimport--import-lines (current-buffer)))
          (same-pkg-lines (--filter (pyimport--same-module it line) current-lines)))
     (if same-pkg-lines
@@ -150,7 +150,7 @@ return 'foo'."
   (-last-item (s-match "'\\(.*\\)' imported but unused" flycheck-message)))
 
 (defun pyimport--remove-on-line (text)
-  "Remove the first text on the current line, if present.
+  "Remove the first occurrence of TEXT on the current line, if present.
 Returns t on success, nil otherwise."
   (save-excursion
     (move-beginning-of-line nil)
