@@ -36,6 +36,7 @@
 (require 'rx)
 (require 's)
 (require 'dash)
+(eval-when-compile (require 'cl-lib))
 
 (defun pyimport--current-line ()
   "Return the whole line at point."
