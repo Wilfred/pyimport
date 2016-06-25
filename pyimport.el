@@ -1,4 +1,4 @@
-;;; pyimport --- Manage Python imports!
+;;; pyimport.el --- Manage Python imports!
 
 ;; Copyright (C) 2016 Wilfred Hughes <me@wilfred.me.uk>
 ;;
