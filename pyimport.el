@@ -163,7 +163,7 @@ Returns t on success, nil otherwise."
       ;; Search forward, until we find the text on this line.
       (when (search-forward text next-line-pos t)
         ;; If we found it, delete it.
-        (delete-backward-char (length text))
+        (delete-char (- (length text)))
         t))))
 
 (defun pyimport--delete-current-line ()

@@ -23,3 +23,11 @@
     (should
      (equal (buffer-string) ""))))
 
+(ert-deftest remove-on-line-first ()
+  "We should remove the first occurrence, if present."
+  (with-temp-buffer
+    (insert "foo bar baz bar")
+    (pyimport--remove-on-line "bar")
+    (should
+     (equal (buffer-string) "foo  baz bar"))))
+
