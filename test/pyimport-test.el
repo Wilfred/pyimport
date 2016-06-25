@@ -15,3 +15,11 @@
     (pyimport--extract-unused-var "'foo.bar' imported but unused")
     "bar")))
 
+(ert-deftest remove-import-case-sensitive ()
+  "Ensure we remove imports case-sensitively"
+  (with-temp-buffer
+    (insert "import cPickle as pickle")
+    (pyimport--remove-import 1 "pickle")
+    (should
+     (equal (buffer-string) ""))))
+
