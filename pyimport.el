@@ -35,6 +35,7 @@
 
 (require 'rx)
 (require 's)
+(require 'dash)
 
 (defun pyimport--current-line ()
   "Return the whole line at point."
