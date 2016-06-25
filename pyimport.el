@@ -196,14 +196,22 @@ on line number LINE, remove VAR (e.g. 'baz')."
                   (looking-at (rx "import " (1+ (not (any space))) " as " line-end)))
           (pyimport--delete-current-line)))))))
 
+(defvar pyimport-pyflakes-path nil
+  "Path to pyflakes executable.
+Required for `pyimport-remove-unused'.")
+
 ;;;###autoload
 (defun pyimport-remove-unused ()
   "Remove unused imports in the current Python buffer."
   (interactive)
+
+  (unless pyimport-pyflakes-path
+    (user-error "You need to set pyimport-pyflakes-path"))
+  
   (let* ((filename (buffer-file-name))
          (flycheck-output (shell-command-to-string
                            (format "%s %s"
-                                   flycheck-python-pyflakes-executable
+                                   pyimport-pyflakes-path
                                    filename)))
          (raw-lines (s-split "\n" (s-trim flycheck-output)))
          (lines (--map (s-split ":" it) raw-lines))
