@@ -146,12 +146,13 @@ Dumb: just scans open Python buffers."
       (user-error "No matches found"))))
 
 (defun pyimport--extract-unused-var (flycheck-message)
-  "Given a string from flycheck of the form:
-
-'foo' imported but unused
-
-return 'foo'."
-  (-last-item (s-match "'\\(.*\\)' imported but unused" flycheck-message)))
+  "Extract the import variable name from FLYCHECK-MESSAGE.
+FLYCHECK-MESSAGE should take the form \"'foo' imported but unused\"."
+  (->> flycheck-message
+       (s-match "'\\(.*\\)' imported but unused")
+       -last-item
+       (s-split (rx "."))
+       -last-item))
 
 (defun pyimport--remove-on-line (text)
   "Remove the first occurrence of TEXT on the current line, if present.
