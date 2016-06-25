@@ -200,8 +200,8 @@ on line number LINE, remove VAR (e.g. 'baz')."
           (pyimport--delete-current-line)))))))
 
 ;; TODO: defcustom
-;; TODO: use executable-find
-(defvar pyimport-pyflakes-path nil
+(defvar pyimport-pyflakes-path
+  (executable-find "pyflakes")
   "Path to pyflakes executable.
 Required for `pyimport-remove-unused'.")
 
