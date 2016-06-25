@@ -49,17 +49,16 @@
   "Return non-nil if the current line is the last in the buffer."
   (looking-at (rx (0+ not-newline) buffer-end)))
 
-(defun pyimport--import-lines (buffer)
-  "Return all the lines in this Python buffer that look like imports."
-  (with-current-buffer buffer
-    (let (lines)
-      (pyimport--for-each-line
-       (when (looking-at (rx (or (seq bol "from ")
-                                 (seq bol "import "))))
-         (push (propertize (pyimport--current-line) 'pyimport-path (buffer-name)) lines)))
-      lines)))
+(defun pyimport--buffer-lines ()
+  (s-split "\n" (buffer-string)))
 
-;; TODO: factor out a function that just returns a list of lines in the file.
+(defun pyimport--import-lines (buffer)
+  "Return all the lines in this Python BUFFER that look like imports."
+  (->> (pyimport--buffer-lines)
+       (--filter (string-match (rx (or (seq bol "from ")
+                                       (seq bol "import "))) it))
+       (--map (propertize it 'pyimport-path (buffer-name)))))
+
 (defmacro pyimport--for-each-line (&rest body)
   "Execute BODY for every line in the current buffer.
 BODY is executed in a `cl-block', so `cl-return' can be used
