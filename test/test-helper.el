@@ -2,7 +2,7 @@
 
 (when (require 'undercover nil t)
   (message "loaded undercover!")
-  (undercover "smartparens*.el"))
+  (undercover "pyimport.el"))
 
 (defvar pyimport--test-path
   (f-parent (f-this-file)))
