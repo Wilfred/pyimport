@@ -114,10 +114,9 @@ baz is SYMBOL."
 
 (defun pyimport--buffers-in-mode (mode)
   "Return a list of all the buffers with major mode MODE."
-  (cl-loop for buffer in (buffer-list)
-           if (with-current-buffer buffer
-                (eq major-mode mode))
-           collect buffer))
+  (--filter (with-current-buffer it
+              (eq major-mode mode))
+            (buffer-list)))
 
 ;;;###autoload
 (defun pyimport-insert-missing ()

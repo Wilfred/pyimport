@@ -1,5 +1,6 @@
 (require 'ert)
 (require 'pyimport)
+(require 'shut-up)
 
 (ert-deftest var-extraction ()
   "Ensure we parse pyflakes output for older pyflakes versions."
@@ -60,3 +61,21 @@ This is list equality, but ignores text properties."
    (not (pyimport--same-module
          "from foo import x"
          "from foo.bar import x"))))
+
+(ert-deftest buffers-in-mode ()
+  (let ((buf1 (get-buffer-create "buf1"))
+        (buf2 (get-buffer-create "buf2")))
+    (shut-up
+      (with-current-buffer buf1
+        (python-mode))
+      (with-current-buffer buf2
+        (python-mode)))
+
+    (let ((result (pyimport--buffers-in-mode 'python-mode)))
+      (should
+       (equal (list buf1 buf2)
+              (--sort (string< (buffer-name it) (buffer-name other))
+                      result))))
+    
+    (kill-buffer buf1)
+    (kill-buffer buf2)))

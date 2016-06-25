@@ -11,4 +11,5 @@
  (depends-on "f")
  (depends-on "cl-lib")
  (depends-on "undercover")
+ (depends-on "shut-up")
  (depends-on "ert-runner"))
