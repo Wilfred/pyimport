@@ -10,4 +10,5 @@
 (development
  (depends-on "f")
  (depends-on "cl-lib")
+ (depends-on "undercover")
  (depends-on "ert-runner"))

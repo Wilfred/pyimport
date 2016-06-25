@@ -1,5 +1,9 @@
 (require 'f)
 
+(when (require 'undercover nil t)
+  (message "loaded undercover!")
+  (undercover "smartparens*.el"))
+
 (defvar pyimport--test-path
   (f-parent (f-this-file)))
 
