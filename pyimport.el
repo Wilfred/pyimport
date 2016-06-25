@@ -134,7 +134,8 @@ Dumb: just scans open Python buffers."
           (push line matching-lines))))
 
     ;; Sort by string length, because the shortest string is usually best.
-    (cl-sort matching-lines #'< :key #'length)
+    (setq matching-lines
+          (--sort (< (length it) (length other)) matching-lines))
 
     (if matching-lines
         (let* ((example-line (-first-item matching-lines))
