@@ -63,6 +63,7 @@
   "Execute BODY for every line in the current buffer.
 BODY is executed in a `cl-block', so `cl-return' can be used
 for early termination."
+  (declare (indent 0))
   `(save-excursion
      (goto-char (point-min))
      ;; TODO: this ignores the last line.
@@ -87,12 +88,12 @@ for early termination."
     (if same-pkg-lines
         ;; Find the first matching line, and append there
         (pyimport--for-each-line
-         (when (pyimport--same-module (pyimport--current-line) line)
-           (move-end-of-line nil)
-           (-let [(_ _module _ name) (s-split " " line)]
-             (insert ", " name))
-           ;; Break from this loop.
-           (cl-return nil)))
+          (when (pyimport--same-module (pyimport--current-line) line)
+            (move-end-of-line nil)
+            (-let [(_ _module _ name) (s-split " " line)]
+              (insert ", " name))
+            ;; Break from this loop.
+            (cl-return nil)))
 
       ;; We don't have any imports for this module yet, so just insert
       ;; LINE as-is.
