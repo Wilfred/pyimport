@@ -99,8 +99,7 @@ for early termination."
       ;; LINE as-is.
       (save-excursion
         (goto-char (point-min))
-        (crux-smart-open-line-above)
-        (insert line)))))
+        (insert line "\n")))))
 
 (defun pyimport--import-simplify (line symbol)
   "Given LINE 'from foo import bar, baz', simplify it to 'from foo import baz', where
