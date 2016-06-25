@@ -61,6 +61,9 @@
 
 ;; TODO: factor out a function that just returns a list of lines in the file.
 (defmacro pyimport--for-each-line (&rest body)
+  "Execute BODY for every line in the current buffer.
+BODY is executed in a `cl-block', so `cl-return' can be used
+for early termination."
   `(save-excursion
      (goto-char (point-min))
      ;; TODO: this ignores the last line.
