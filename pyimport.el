@@ -199,6 +199,8 @@ on line number LINE, remove VAR (e.g. 'baz')."
                   (looking-at (rx "import " (1+ (not (any space))) " as " line-end)))
           (pyimport--delete-current-line)))))))
 
+;; TODO: defcustom
+;; TODO: use executable-find
 (defvar pyimport-pyflakes-path nil
   "Path to pyflakes executable.
 Required for `pyimport-remove-unused'.")
