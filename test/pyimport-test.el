@@ -79,3 +79,14 @@ This is list equality, but ignores text properties."
     
     (kill-buffer buf1)
     (kill-buffer buf2)))
+
+(ert-deftest for-each-line ()
+  (let (result-lines)
+    (with-temp-buffer
+      (insert "a\nb\nc\nd")
+      (pyimport--for-each-line
+        (push (pyimport--current-line) result-lines)))
+
+    (setq result-lines (nreverse result-lines))
+    (should
+     (equal result-lines '("a" "b" "c" "d")))))

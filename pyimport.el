@@ -5,7 +5,7 @@
 ;; Author: Wilfred Hughes <me@wilfred.me.uk>
 ;; Created: 25 Jun 2016
 ;; Version: 1.0
-;; Package-Requires: ((dash "2.8.0") (s "1.9.0") (cl-lib "0.5"))
+;; Package-Requires: ((dash "2.8.0") (s "1.9.0"))
 ;;; Commentary:
 
 ;; This package can remove unused Python imports, or insert missing
@@ -36,14 +36,13 @@
 (require 'rx)
 (require 's)
 (require 'dash)
-(eval-when-compile (require 'cl-lib))
 
 (defun pyimport--current-line ()
-  "Return the whole line at point."
+  "Return the whole line at point, excluding the trailing newline."
   (save-excursion
     (let ((line-start (progn (beginning-of-line) (point)))
           (line-end (progn (end-of-line) (point))))
-      (s-trim-left (buffer-substring line-start line-end)))))
+      (buffer-substring line-start line-end))))
 
 (defun pyimport--last-line-p ()
   "Return non-nil if the current line is the last in the buffer."
@@ -61,17 +60,15 @@
 
 (defmacro pyimport--for-each-line (&rest body)
   "Execute BODY for every line in the current buffer.
-BODY is executed in a `cl-block', so `cl-return' can be used
-for early termination."
+To terminate the loop early, throw 'break."
   (declare (indent 0))
   `(save-excursion
-     (goto-char (point-min))
-     ;; TODO: this ignores the last line.
-     (cl-loop
-      until (pyimport--last-line-p)
-      do (progn
-           ,@body
-           (forward-line)))))
+     (catch 'break
+       (goto-char (point-min))
+       (while (not (pyimport--last-line-p))
+         ,@body
+         (forward-line))
+       ,@body)))
 
 (defun pyimport--same-module (import1 import2)
   "Return t if both lines of Python imports are from the same module."
@@ -93,7 +90,7 @@ for early termination."
             (-let [(_ _module _ name) (s-split " " line)]
               (insert ", " name))
             ;; Break from this loop.
-            (cl-return nil)))
+            (throw 'break nil)))
 
       ;; We don't have any imports for this module yet, so just insert
       ;; LINE as-is.
