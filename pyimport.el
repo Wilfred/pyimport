@@ -203,6 +203,9 @@ on line number LINE, remove VAR (e.g. 'baz')."
 (defvar pyimport-pyflakes-path
   (executable-find "pyflakes")
   "Path to pyflakes executable.
+If pyflakes is alread on your $PATH, this should work with
+modification.
+
 Required for `pyimport-remove-unused'.")
 
 ;;;###autoload
@@ -211,7 +214,7 @@ Required for `pyimport-remove-unused'.")
   (interactive)
 
   (unless pyimport-pyflakes-path
-    (user-error "You need to set pyimport-pyflakes-path"))
+    (user-error "You need to install pyflakes or set pyimport-pyflakes-path"))
   
   (let* ((filename (buffer-file-name))
          (flycheck-output (shell-command-to-string
