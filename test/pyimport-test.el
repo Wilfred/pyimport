@@ -50,3 +50,13 @@ This is list equality, but ignores text properties."
                '("from foo import bar"
                  "import baz"
                  "import quz.zox"))))))
+
+(ert-deftest same-module ()
+  (should
+   (pyimport--same-module
+    "from foo import x"
+    "from foo import y, z"))
+  (should
+   (not (pyimport--same-module
+         "from foo import x"
+         "from foo.bar import x"))))
