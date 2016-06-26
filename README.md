@@ -11,8 +11,24 @@ Requires pyflakes to be installed.
 
 ![screenshot](remove_unused.gif)
 
+Run `M-x pyimport-remove-unused`.
+
+This requires `pyflakes` to be on `PATH`. Alternatively, set
+`pyimport-pyflakes-path`.
+
 ## Insert Missing Imports
 
 ![screenshot](insert_missing.gif)
 
+Place point on the missing variable, then run
+`M-x pyimport-insert-missing`.
+
+This assumes that you have another Python buffer that contains an
+example of importing the variable.
+
+I like to bind this to a key:
+
+```emacs-lisp
+(define-key python-mode-map (kbd "C-c C-i") #'pyimport-insert-missing)
+```
 
