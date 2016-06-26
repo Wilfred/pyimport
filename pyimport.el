@@ -48,12 +48,13 @@
   "Return non-nil if the current line is the last in the buffer."
   (looking-at (rx (0+ not-newline) buffer-end)))
 
-(defun pyimport--buffer-lines ()
-  (s-split "\n" (buffer-string)))
+(defun pyimport--buffer-lines (buffer)
+  (with-current-buffer buffer
+    (s-split "\n" (buffer-string))))
 
 (defun pyimport--import-lines (buffer)
   "Return all the lines in this Python BUFFER that look like imports."
-  (->> (pyimport--buffer-lines)
+  (->> (pyimport--buffer-lines buffer)
        (--filter (string-match (rx (or (seq bol "from ")
                                        (seq bol "import "))) it))
        (--map (propertize it 'pyimport-path (buffer-name)))))

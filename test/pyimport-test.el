@@ -51,6 +51,18 @@ This is list equality, but ignores text properties."
                "import baz"
                "import quz.zox")))))
 
+(ert-deftest import-lines-correct-buffer ()
+  "Ensure we extract lines from the buffer passed in."
+  (let (buf)
+    (with-temp-buffer
+      (insert "import foo")
+      (setq buf (current-buffer))
+      (with-temp-buffer
+        (insert "import bar")
+        (should (equal-string-list
+                 (pyimport--import-lines buf)
+                 '("import foo")))))))
+
 (ert-deftest same-module ()
   (should
    (pyimport--same-module
