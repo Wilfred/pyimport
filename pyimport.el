@@ -86,7 +86,7 @@ To terminate the loop early, throw 'break."
         ;; Find the first matching line, and append there
         (pyimport--for-each-line
           (when (pyimport--same-module (pyimport--current-line) line)
-            (move-end-of-line nil)
+            (goto-char (point-at-eol))
             (-let [(_ _module _ name) (s-split " " line)]
               (insert ", " name))
             ;; Break from this loop.
