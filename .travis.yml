@@ -12,3 +12,5 @@ env:
 script:
   - emacs --version
   - cask exec ert-runner
+notifications:
+  email: false
