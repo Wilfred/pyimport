@@ -40,17 +40,16 @@ This is list equality, but ignores text properties."
                 (-zip x y))))
 
 (ert-deftest import-lines ()
-  (let (result-lines)
-    (with-temp-buffer
-      (insert "from foo import bar\n"
-              "import baz\n"
-              "y = 1\n"
-              "import quz.zox")
-      (should (equal-string-list
-               (pyimport--import-lines (current-buffer))
-               '("from foo import bar"
-                 "import baz"
-                 "import quz.zox"))))))
+  (with-temp-buffer
+    (insert "from foo import bar\n"
+            "import baz\n"
+            "y = 1\n"
+            "import quz.zox")
+    (should (equal-string-list
+             (pyimport--import-lines (current-buffer))
+             '("from foo import bar"
+               "import baz"
+               "import quz.zox")))))
 
 (ert-deftest same-module ()
   (should
