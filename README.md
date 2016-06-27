@@ -4,9 +4,10 @@
 
 [![Build Status](https://travis-ci.org/Wilfred/pyimport.svg?branch=master)](https://travis-ci.org/Wilfred/pyimport)
 [![Coverage Status](https://coveralls.io/repos/github/Wilfred/pyimport/badge.svg?branch=master)](https://coveralls.io/github/Wilfred/pyimport?branch=master)
+[![MELPA](http://melpa.org/packages/pyimport-badge.svg)](http://melpa.org/#/pyimport)
 
-Installation: add pyimport.el to your
-`load-path`. [MELPA coming soon](https://github.com/melpa/melpa/pull/4009).
+Installation: install from MELPA, or add pyimport.el to your
+`load-path`.
 
 ## Unused Imports
 
