@@ -57,7 +57,7 @@
   (->> (pyimport--buffer-lines buffer)
        (--filter (string-match (rx (or (seq bol "from ")
                                        (seq bol "import "))) it))
-       (--map (propertize it 'pyimport-path (buffer-name)))))
+       (--map (propertize it 'pyimport-path (buffer-name buffer)))))
 
 (defmacro pyimport--for-each-line (&rest body)
   "Execute BODY for every line in the current buffer.

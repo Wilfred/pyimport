@@ -53,15 +53,16 @@ This is list equality, but ignores text properties."
 
 (ert-deftest import-lines-correct-buffer ()
   "Ensure we extract lines from the buffer passed in."
-  (let (buf)
-    (with-temp-buffer
+  (let ((buf (get-buffer-create "my-buffer")))
+    (with-current-buffer buf
       (insert "import foo")
-      (setq buf (current-buffer))
+      
       (with-temp-buffer
         (insert "import bar")
-        (should (equal-string-list
-                 (pyimport--import-lines buf)
-                 '("import foo")))))))
+        (let ((lines (pyimport--import-lines buf)))
+          (should (equal lines '("import foo")))
+          (should (equal (get-text-property 0 'pyimport-path (-first-item lines))
+                         "my-buffer")))))))
 
 (ert-deftest same-module ()
   (should
