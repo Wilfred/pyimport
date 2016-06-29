@@ -213,6 +213,9 @@ Required for `pyimport-remove-unused'.")
 
   (unless pyimport-pyflakes-path
     (user-error "You need to install pyflakes or set pyimport-pyflakes-path"))
+  ;; TODO: handle temporary and unsaved buffers too.
+  (unless (buffer-file-name)
+    (user-error "This buffer is not visiting a file"))
   
   (let* ((filename (buffer-file-name))
          (flycheck-output (shell-command-to-string
