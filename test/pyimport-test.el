@@ -32,20 +32,13 @@
     (should
      (equal (buffer-string) "foo  baz bar"))))
 
-(defun equal-string-list (x y)
-  "Return t if X and Y are lists containing the same strings.
-This is list equality, but ignores text properties."
-  (and (equal (length x) (length y))
-       (--all-p (string= (car it) (cdr it))
-                (-zip x y))))
-
 (ert-deftest import-lines ()
   (with-temp-buffer
     (insert "from foo import bar\n"
             "import baz\n"
             "y = 1\n"
             "import quz.zox")
-    (should (equal-string-list
+    (should (equal
              (pyimport--import-lines (current-buffer))
              '("from foo import bar"
                "import baz"
