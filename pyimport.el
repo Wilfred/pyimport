@@ -4,7 +4,7 @@
 ;;
 ;; Author: Wilfred Hughes <me@wilfred.me.uk>
 ;; Created: 25 Jun 2016
-;; Version: 1.0
+;; Version: 1.1
 ;; Package-Requires: ((dash "2.8.0") (s "1.9.0"))
 ;;; Commentary:
 
