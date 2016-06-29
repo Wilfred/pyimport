@@ -1,7 +1,6 @@
 (require 'f)
 
 (when (require 'undercover nil t)
-  (message "loaded undercover!")
   (undercover "pyimport.el"))
 
 (defvar pyimport--test-path
