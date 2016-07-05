@@ -213,15 +213,14 @@ Required for `pyimport-remove-unused'.")
 
   (unless pyimport-pyflakes-path
     (user-error "You need to install pyflakes or set pyimport-pyflakes-path"))
-  ;; TODO: handle temporary and unsaved buffers too.
-  (unless (buffer-file-name)
-    (user-error "This buffer is not visiting a file"))
-  
-  (let* ((filename (buffer-file-name))
-         (flycheck-output (shell-command-to-string
-                           (format "%s %s"
-                                   pyimport-pyflakes-path
-                                   filename)))
+
+  (let* ((start 1)
+         (end (1+ (buffer-size)))
+         (flycheck-output (progn
+                            (shell-command-on-region
+                             start end pyimport-pyflakes-path "*pyimport*")
+                            (with-current-buffer "*pyimport*"
+                              (buffer-string))))
          (raw-lines (s-split "\n" (s-trim flycheck-output)))
          (lines (--map (s-split ":" it) raw-lines))
          (import-lines (--filter (s-ends-with-p "imported but unused" (-last-item it)) lines))
