@@ -214,23 +214,23 @@ Required for `pyimport-remove-unused'.")
   (unless pyimport-pyflakes-path
     (user-error "You need to install pyflakes or set pyimport-pyflakes-path"))
 
-  (let* ((start 1)
-         (end (1+ (buffer-size)))
-         (flycheck-output (progn
-                            (shell-command-on-region
-                             start end pyimport-pyflakes-path "*pyimport*")
-                            (with-current-buffer "*pyimport*"
-                              (buffer-string))))
-         (raw-lines (s-split "\n" (s-trim flycheck-output)))
-         (lines (--map (s-split ":" it) raw-lines))
-         (import-lines (--filter (s-ends-with-p "imported but unused" (-last-item it)) lines))
-         (unused-imports (--map (cons (read (nth 1 it))
-                                      (pyimport--extract-unused-var (nth 2 it))) import-lines)))
-    ;; Iterate starting form the last unused import, so our line
-    ;; numbers stay correct, even when we delete lines.
-    (--each (reverse unused-imports)
-      (-let [(line . var ) it]
-        (pyimport--remove-import line var)))))
+  (let (flycheck-output)
+    (shell-command-on-region
+     (point-min) (point-max) pyimport-pyflakes-path "*pyimport*")
+    (with-current-buffer "*pyimport*"
+      (setq flycheck-output (buffer-string)))
+    (kill-buffer "*pyimport*")
+
+    (let* ((raw-lines (s-split "\n" (s-trim flycheck-output)))
+           (lines (--map (s-split ":" it) raw-lines))
+           (import-lines (--filter (s-ends-with-p "imported but unused" (-last-item it)) lines))
+           (unused-imports (--map (cons (read (nth 1 it))
+                                        (pyimport--extract-unused-var (nth 2 it))) import-lines)))
+      ;; Iterate starting form the last unused import, so our line
+      ;; numbers stay correct, even when we delete lines.
+      (--each (reverse unused-imports)
+        (-let [(line . var ) it]
+          (pyimport--remove-import line var))))))
 
 (provide 'pyimport)
 ;;; pyimport.el ends here
