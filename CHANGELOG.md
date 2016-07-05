@@ -2,8 +2,8 @@
 
 * Fixed a bug with `pyimport-insert-missing` where it reported the
   wrong buffer where it found the import.
-* Fail with a helpful message in `pyimport-remove-unused` if the
-  buffer is not associated with a file.
+* `pyimport-remove-unused` now works on all buffers, even if they're
+  unsaved or not visiting a file.
 
 ## v1.0
 
