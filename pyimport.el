@@ -141,7 +141,7 @@ Dumb: just scans open Python buffers."
                (line (pyimport--import-simplify example-line symbol)))
           (pyimport--insert-import line)
           (message "%s (from %s)" line (get-text-property 0 'pyimport-path example-line)))
-      (user-error "No matches found"))))
+      (user-error "No matches found for %s" symbol))))
 
 (defun pyimport--extract-unused-var (flycheck-message)
   "Extract the import variable name from FLYCHECK-MESSAGE.
