@@ -57,6 +57,20 @@
           (should (equal (get-text-property 0 'pyimport-path (-first-item lines))
                          "my-buffer")))))))
 
+(ert-deftest extract-unused-var ()
+  (should
+   (equal
+    (pyimport--extract-unused-var "'foo' imported but unused")
+    "foo"))
+  (should
+   (equal
+    (pyimport--extract-unused-var "'foo.bar' imported but unused")
+    "bar"))
+  (should
+   (equal
+    (pyimport--extract-unused-var "'foo.bar as xxx' imported but unused")
+    "xxx")))
+
 (ert-deftest same-module ()
   (should
    (pyimport--same-module

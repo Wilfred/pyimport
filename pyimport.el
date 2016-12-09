@@ -150,6 +150,8 @@ FLYCHECK-MESSAGE should take the form \"'foo' imported but unused\"."
        (s-match "'\\(.*\\)' imported but unused")
        -last-item
        (s-split (rx "."))
+       -last-item
+       (s-split (rx " as "))
        -last-item))
 
 (defun pyimport--remove-on-line (text)
