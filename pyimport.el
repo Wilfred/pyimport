@@ -122,9 +122,12 @@ baz is SYMBOL."
   "Try to insert an import for the symbol at point.
 Dumb: just scans open Python buffers."
   (interactive)
-  (let ((symbol (substring-no-properties (thing-at-point 'symbol)))
+  (let ((symbol (thing-at-point 'symbol))
         (matching-lines nil)
         (case-fold-search nil))
+    (unless symbol
+      (user-error "No symbol at point"))
+    (setq symbol (substring-no-properties symbol))
     ;; Find all the import lines in all Python buffers
     (dolist (buffer (pyimport--buffers-in-mode 'python-mode))
       (dolist (line (pyimport--import-lines buffer))
