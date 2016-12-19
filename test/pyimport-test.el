@@ -24,6 +24,14 @@
     (should
      (equal (buffer-string) ""))))
 
+(ert-deftest remove-import-extra-whitespace ()
+  "Ensure we remove imports correctly even when there's extra whitespace."
+  (with-temp-buffer
+    (insert "from foo import   bar")
+    (pyimport--remove-import 1 "bar")
+    (should
+     (equal (buffer-string) ""))))
+
 (ert-deftest remove-on-line-first ()
   "We should remove the first occurrence, if present."
   (with-temp-buffer
