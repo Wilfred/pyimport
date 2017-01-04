@@ -139,7 +139,7 @@ Preserves pyimport text properties on LINE."
 If called with a prefix, choose which import to use.
 
 This is a simple heuristic: we just look for imports in all open Python buffers."
-  (interactive "p")
+  (interactive "P")
   (let ((symbol (thing-at-point 'symbol))
         (matching-lines nil)
         (case-fold-search nil))
