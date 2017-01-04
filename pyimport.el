@@ -122,6 +122,17 @@ Preserves pyimport text properties on LINE."
               (eq major-mode mode))
             (buffer-list)))
 
+(defun pyimport--syntax-highlight (str)
+  "Apply font-lock properties to a string STR of Python code."
+  (with-temp-buffer
+    (insert str)
+    (delay-mode-hooks (python-mode))
+    (if (fboundp 'font-lock-ensure)
+        (font-lock-ensure)
+      (with-no-warnings
+        (font-lock-fontify-buffer)))
+    (buffer-string)))
+
 ;;;###autoload
 (defun pyimport-insert-missing (prefix)
   "Try to insert an import for the symbol at point.
@@ -145,6 +156,10 @@ This is a simple heuristic: we just look for imports in all open Python buffers.
     ;; Simplify imports so we don't show irrelevant symbols.
     (setq matching-lines
           (--map (pyimport--import-simplify it symbol) matching-lines))
+
+    ;; Syntax highlight, to give a prettier choice in the minibuffer.
+    (setq matching-lines
+          (-map #'pyimport--syntax-highlight matching-lines))
 
     ;; Sort by string length, because the shortest string is usually best.
     (setq matching-lines
