@@ -100,16 +100,21 @@ To terminate the loop early, throw 'break."
         (insert line "\n")))))
 
 (defun pyimport--import-simplify (line symbol)
-  "Given LINE 'from foo import bar, baz', simplify it to 'from foo import baz', where
-baz is SYMBOL."
+  "Given LINE 'from foo import bar, baz', and SYMBOL 'baz', simplify to
+'from foo import baz'.
+
+Preserves pyimport text properties on LINE."
   ;; TODO: simplify "from foo import bar, baz as biz" -> "from foo import baz as biz"
-  (cond ((string-match "from .* import .* as .*" line)
-         line)
-        ((s-starts-with-p "from " line)
-         (let ((parts (s-split " " line)))
-           (format "from %s import %s" (nth 1 parts) symbol)))
-        (t
-         line)))
+  (let ((simplified
+         (cond ((string-match "from .* import .* as .*" line)
+                line)
+               ((s-starts-with-p "from " line)
+                (let ((parts (s-split " " line)))
+                  (format "from %s import %s" (nth 1 parts) symbol)))
+               (t
+                line))))
+    (propertize simplified 'pyimport-path
+                (get-text-property 0 'pyimport-path line))))
 
 (defun pyimport--buffers-in-mode (mode)
   "Return a list of all the buffers with major mode MODE."
@@ -118,10 +123,12 @@ baz is SYMBOL."
             (buffer-list)))
 
 ;;;###autoload
-(defun pyimport-insert-missing ()
+(defun pyimport-insert-missing (prefix)
   "Try to insert an import for the symbol at point.
-Dumb: just scans open Python buffers."
-  (interactive)
+If called with a prefix, choose which import to use.
+
+This is a simple heuristic: we just look for imports in all open Python buffers."
+  (interactive "p")
   (let ((symbol (thing-at-point 'symbol))
         (matching-lines nil)
         (case-fold-search nil))
@@ -135,15 +142,21 @@ Dumb: just scans open Python buffers."
         (when (string-match (rx-to-string `(seq symbol-start ,symbol symbol-end)) line)
           (push line matching-lines))))
 
+    ;; Simplify imports so we don't show irrelevant symbols.
+    (setq matching-lines
+          (--map (pyimport--import-simplify it symbol) matching-lines))
+
     ;; Sort by string length, because the shortest string is usually best.
     (setq matching-lines
           (--sort (< (length it) (length other)) matching-lines))
 
     (if matching-lines
-        (let* ((example-line (-first-item matching-lines))
-               (line (pyimport--import-simplify example-line symbol)))
+        (let ((line
+               (if prefix
+                   (completing-read "Choose import: " matching-lines)
+                 (-first-item matching-lines))))
           (pyimport--insert-import line)
-          (message "%s (from %s)" line (get-text-property 0 'pyimport-path example-line)))
+          (message "%s (from %s)" line (get-text-property 0 'pyimport-path line)))
       (user-error "No matches found for %s" symbol))))
 
 (defun pyimport--extract-unused-var (flycheck-message)
