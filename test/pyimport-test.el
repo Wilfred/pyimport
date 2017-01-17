@@ -117,3 +117,29 @@
     (setq result-lines (nreverse result-lines))
     (should
      (equal result-lines '("a" "b" "c" "d")))))
+
+(ert-deftest insert-import-simple ()
+  "Test inserting an import."
+  (with-temp-buffer
+    (pyimport--insert-import "from foo import x")
+    (should
+     (equal (buffer-string)
+            "from foo import x\n"))))
+
+(ert-deftest insert-import-with-existing ()
+  "Test inserting an import when we already have imports from that module."
+  (with-temp-buffer
+    (insert "from foo import x\n")
+    (pyimport--insert-import "from foo import y")
+    (should
+     (equal (buffer-string)
+            "from foo import x, y\n"))))
+
+(ert-deftest insert-import-duplicate ()
+  "Test inserting an import when we already have that symbol imported"
+  (with-temp-buffer
+    (insert "from foo import x\n")
+    (pyimport--insert-import "from foo import x")
+    (should
+     (equal (buffer-string)
+            "from foo import x\n"))))

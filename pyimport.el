@@ -79,6 +79,24 @@ To terminate the loop early, throw 'break."
          (string= keyword2 "from")
          (string= mod1 mod2))))
 
+(defun pyimport--insert-from-symbol (symbol)
+  "When point is a on an import line, add SYMBOL."
+  ;; Assumes the current line is of the form 'from foo import bar, baz'.
+
+  ;; Step past the 'from '.
+  (goto-char (line-beginning-position))
+  (while (not (looking-at "import "))
+    (forward-char 1))
+  (forward-char (length "import "))
+
+  (insert
+   (->> (delete-and-extract-region (point) (line-end-position))
+        (s-split ", ")
+        (cons symbol)
+        (-sort #'string<)
+        (-uniq)
+        (s-join ", "))))
+
 (defun pyimport--insert-import (line)
   "Insert LINE, a python import statement, in the current buffer."
   (let* ((current-lines (pyimport--import-lines (current-buffer)))
@@ -87,9 +105,8 @@ To terminate the loop early, throw 'break."
         ;; Find the first matching line, and append there
         (pyimport--for-each-line
           (when (pyimport--same-module (pyimport--current-line) line)
-            (goto-char (point-at-eol))
             (-let [(_ _module _ name) (s-split " " line)]
-              (insert ", " name))
+              (pyimport--insert-from-symbol name))
             ;; Break from this loop.
             (throw 'break nil)))
 
