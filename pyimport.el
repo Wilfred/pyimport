@@ -174,6 +174,9 @@ This is a simple heuristic: we just look for imports in all open Python buffers.
     (setq matching-lines
           (--map (pyimport--import-simplify it symbol) matching-lines))
 
+    ;; Remove duplicates.
+    (setq matching-lines (-uniq matching-lines))
+
     ;; Syntax highlight, to give a prettier choice in the minibuffer.
     (setq matching-lines
           (-map #'pyimport--syntax-highlight matching-lines))
