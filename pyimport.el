@@ -5,7 +5,7 @@
 ;; Author: Wilfred Hughes <me@wilfred.me.uk>
 ;; Created: 25 Jun 2016
 ;; Version: 1.1
-;; Package-Requires: ((dash "2.8.0") (s "1.9.0"))
+;; Package-Requires: ((dash "2.8.0") (s "1.9.0") (shut-up "0.3.2"))
 ;;; Commentary:
 
 ;; This package can remove unused Python imports, or insert missing
@@ -36,6 +36,7 @@
 (require 'rx)
 (require 's)
 (require 'dash)
+(require 'shut-up)
 
 (defun pyimport--current-line ()
   "Return the whole line at point, excluding the trailing newline."
@@ -116,22 +117,35 @@ To terminate the loop early, throw 'break."
         (goto-char (point-min))
         (insert line "\n")))))
 
-(defun pyimport--import-simplify (line symbol)
-  "Given LINE 'from foo import bar, baz', and SYMBOL 'baz', simplify to
-'from foo import baz'.
+(defun pyimport--get-alias (import-as symbol)
+  "Return the original symbol name, the aliased name, or nil, if
+SYMBOL is in IMPORT-AS."
+  (let ((parts (s-split " as " import-as)))
+    (cond
+     ((equal (nth 0 parts) symbol) symbol)
+     ((equal (nth 1 parts) symbol) import-as))))
 
-Preserves pyimport text properties on LINE."
-  ;; TODO: simplify "from foo import bar, baz as biz" -> "from foo import baz as biz"
-  (let ((simplified
-         (cond ((string-match "from .* import .* as .*" line)
-                line)
-               ((s-starts-with-p "from " line)
-                (let ((parts (s-split " " line)))
-                  (format "from %s import %s" (nth 1 parts) symbol)))
-               (t
-                line))))
-    (propertize simplified 'pyimport-path
-                (get-text-property 0 'pyimport-path line))))
+(defun pyimport--extract-simple-import (line symbol)
+  "Given LINE 'from foo import x, y as z', if SYMBOL is 'z',
+return 'from foo import y as z'."
+  (let ((parts (s-split " " (s-collapse-whitespace line))))
+    (cond
+     ((s-starts-with-p "from " line)
+      (let* ((raw-aliases (nth 1 (s-split " import " line)))
+             (aliases (s-split "," raw-aliases))
+             (matching-aliases (--map (pyimport--get-alias (s-trim it) symbol) aliases)))
+        (setq matching-aliases (-non-nil matching-aliases))
+        (when matching-aliases
+          (format "from %s import %s"
+                  (nth 1 parts)
+                  (nth 0 matching-aliases)))))
+     ((s-starts-with-p "import " line)
+      (let* ((raw-aliases (nth 1 (s-split "import " line)))
+             (aliases (s-split "," raw-aliases))
+             (matching-aliases (--map (pyimport--get-alias (s-trim it) symbol) aliases)))
+        (setq matching-aliases (-non-nil matching-aliases))
+        (when matching-aliases
+          (format "import %s" (nth 0 matching-aliases))))))))
 
 (defun pyimport--buffers-in-mode (mode)
   "Return a list of all the buffers with major mode MODE."
@@ -166,13 +180,8 @@ This is a simple heuristic: we just look for imports in all open Python buffers.
     ;; Find all the import lines in all Python buffers
     (dolist (buffer (pyimport--buffers-in-mode 'python-mode))
       (dolist (line (pyimport--import-lines buffer))
-        ;; If any of them contain the current symbol:
-        (when (string-match (rx-to-string `(seq symbol-start ,symbol symbol-end)) line)
-          (push line matching-lines))))
-
-    ;; Simplify imports so we don't show irrelevant symbols.
-    (setq matching-lines
-          (--map (pyimport--import-simplify it symbol) matching-lines))
+        (-if-let (import (pyimport--extract-simple-import line symbol))
+            (push import matching-lines))))
 
     ;; Remove duplicates.
     (setq matching-lines (-uniq matching-lines))
@@ -269,8 +278,9 @@ Required for `pyimport-remove-unused'.")
     (user-error "You need to install pyflakes or set pyimport-pyflakes-path"))
 
   (let (flycheck-output)
-    (shell-command-on-region
-     (point-min) (point-max) pyimport-pyflakes-path "*pyimport*")
+    (shut-up
+      (shell-command-on-region
+       (point-min) (point-max) pyimport-pyflakes-path "*pyimport*"))
     (with-current-buffer "*pyimport*"
       (setq flycheck-output (buffer-string)))
     (kill-buffer "*pyimport*")

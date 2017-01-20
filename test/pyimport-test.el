@@ -151,3 +151,29 @@
     (should
      (equal (buffer-string)
             "from foo import x\n"))))
+
+(ert-deftest extract-simple-import ()
+  (should
+   (equal
+    (pyimport--extract-simple-import "from foo import bar, xxx" "bar")
+    "from foo import bar"))
+  (should
+   (equal
+    (pyimport--extract-simple-import "from foo import bar,xxx" "xxx")
+    "from foo import xxx"))
+  (should
+   (equal
+    (pyimport--extract-simple-import "from foo import xxx as bar, yyy" "bar")
+    "from foo import xxx as bar"))
+  (should
+   (equal
+    (pyimport--extract-simple-import "import foo" "foo")
+    "import foo"))
+  (should
+   (equal
+    (pyimport--extract-simple-import "import foo as bar" "foo")
+    "import foo"))
+  (should
+   (equal
+    (pyimport--extract-simple-import "import foo as bar" "bar")
+    "import foo as bar")))
