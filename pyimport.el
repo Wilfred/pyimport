@@ -5,7 +5,7 @@
 ;; Author: Wilfred Hughes <me@wilfred.me.uk>
 ;; Created: 25 Jun 2016
 ;; Version: 1.1
-;; Package-Requires: ((dash "2.8.0") (s "1.9.0"))
+;; Package-Requires: ((dash "2.8.0") (s "1.9.0") (shut-up "0.3.2"))
 ;;; Commentary:
 
 ;; This package can remove unused Python imports, or insert missing
@@ -36,6 +36,7 @@
 (require 'rx)
 (require 's)
 (require 'dash)
+(require 'shut-up)
 
 (defun pyimport--current-line ()
   "Return the whole line at point, excluding the trailing newline."
@@ -269,8 +270,9 @@ Required for `pyimport-remove-unused'.")
     (user-error "You need to install pyflakes or set pyimport-pyflakes-path"))
 
   (let (flycheck-output)
-    (shell-command-on-region
-     (point-min) (point-max) pyimport-pyflakes-path "*pyimport*")
+    (shut-up
+      (shell-command-on-region
+       (point-min) (point-max) pyimport-pyflakes-path "*pyimport*"))
     (with-current-buffer "*pyimport*"
       (setq flycheck-output (buffer-string)))
     (kill-buffer "*pyimport*")
