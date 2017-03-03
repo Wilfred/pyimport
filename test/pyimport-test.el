@@ -40,6 +40,14 @@
     (should
      (equal (buffer-string) ""))))
 
+(ert-deftest remove-import-as-alias ()
+  "Ensure we remove imports correctly when there are aliases."
+  (with-temp-buffer
+    (insert "import foo.bar as bar")
+    (pyimport--remove-import 1 "bar")
+    (should
+     (equal (buffer-string) ""))))
+
 (ert-deftest remove-on-line-first ()
   "We should remove the first occurrence, if present."
   (with-temp-buffer
