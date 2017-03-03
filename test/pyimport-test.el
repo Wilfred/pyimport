@@ -27,7 +27,7 @@
 (ert-deftest remove-import-extra-whitespace ()
   "Ensure we remove imports correctly even when there's extra whitespace."
   (with-temp-buffer
-    (insert "from foo import   bar")
+    (insert "from   foo  import   bar")
     (pyimport--remove-import 1 "bar")
     (should
      (equal (buffer-string) ""))))
@@ -37,6 +37,14 @@
   (with-temp-buffer
     (insert "from foo import bar as newname")
     (pyimport--remove-import 1 "newname")
+    (should
+     (equal (buffer-string) ""))))
+
+(ert-deftest remove-import-as-alias ()
+  "Ensure we remove imports correctly when there are aliases."
+  (with-temp-buffer
+    (insert "import foo.bar as bar")
+    (pyimport--remove-import 1 "bar")
     (should
      (equal (buffer-string) ""))))
 

@@ -245,7 +245,13 @@ on line number LINE, remove VAR (e.g. 'baz')."
 
       (cond
        ;; If it's just 'import foo' or 'import foo.bar', just remove it.
-       ((looking-at (rx "import " (1+ (not (any space))) line-end))
+       ((looking-at (rx "import"
+                        (+ space)
+                        (+ (or (syntax word) (syntax symbol) (syntax punctuation)))
+                        (0+ space)
+                        (? "as" (+ space) (+ (or (syntax word) (syntax symbol))))
+                        (0+ space)
+                        line-end))
         (pyimport--delete-current-line))
 
        ;; Otherwise, it's '... import foo' or '... import foo as bar'
@@ -255,7 +261,10 @@ on line number LINE, remove VAR (e.g. 'baz')."
             (pyimport--remove-on-line (format "%s, " var))
             (pyimport--remove-on-line var))
         ;; If we only have "from foo import " left, remove the rest of the line.
-        (when (or (looking-at (rx "from " (1+ (not (any space))) " import" (1+ space) line-end))
+        (when (or (looking-at (rx "from" (+ space)
+                                  (+ (or (syntax word) (syntax symbol) (syntax punctuation))) (+ space)
+                                  "import" (1+ space)
+                                  line-end))
                   (looking-at (rx "from " (1+ (not (any space))) " import " (1+ (not (any space))) " as" (1+ space) line-end))
                   (looking-at (rx "import " (1+ (not (any space))) " as" (1+ space) line-end)))
           (pyimport--delete-current-line)))))))
