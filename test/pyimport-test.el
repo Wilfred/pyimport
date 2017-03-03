@@ -27,7 +27,7 @@
 (ert-deftest remove-import-extra-whitespace ()
   "Ensure we remove imports correctly even when there's extra whitespace."
   (with-temp-buffer
-    (insert "from foo import   bar")
+    (insert "from   foo  import   bar")
     (pyimport--remove-import 1 "bar")
     (should
      (equal (buffer-string) ""))))
