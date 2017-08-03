@@ -56,11 +56,10 @@
     (with-current-buffer buffer
       (save-excursion
         (goto-char (point-min))
-        (unless (pyimport--in-string-p)
-          (push (pyimport--current-line) lines))
-        (while (zerop (forward-line 1))
+        (while (not (eobp))
           (unless (pyimport--in-string-p)
-            (push (pyimport--current-line) lines)))))
+            (push (pyimport--current-line) lines))
+          (forward-line 1))))
     (nreverse lines)))
 
 (defun pyimport--import-lines (buffer)
