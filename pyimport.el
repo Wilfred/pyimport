@@ -40,10 +40,7 @@
 
 (defun pyimport--current-line ()
   "Return the whole line at point, excluding the trailing newline."
-  (save-excursion
-    (let ((line-start (progn (beginning-of-line) (point)))
-          (line-end (progn (end-of-line) (point))))
-      (buffer-substring line-start line-end))))
+  (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
 
 (defun pyimport--last-line-p ()
   "Return non-nil if the current line is the last in the buffer."
