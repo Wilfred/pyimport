@@ -318,7 +318,7 @@ Required for `pyimport-remove-unused'.")
            (import-lines (--filter (s-ends-with-p "imported but unused" (-last-item it)) lines))
            (unused-imports (--map (cons (read (nth 1 it))
                                         (pyimport--extract-unused-var (nth 2 it))) import-lines)))
-      ;; Iterate starting form the last unused import, so our line
+      ;; Iterate starting from the last unused import, so our line
       ;; numbers stay correct, even when we delete lines.
       (--each (reverse unused-imports)
         (-let [(line . var ) it]
