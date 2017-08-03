@@ -2,21 +2,21 @@
 (require 'pyimport)
 (require 'shut-up)
 
-(ert-deftest var-extraction ()
+(ert-deftest pyimport-var-extraction ()
   "Ensure we parse pyflakes output for older pyflakes versions."
   (should
    (equal
     (pyimport--extract-unused-var "'foo' imported but unused")
     "foo")))
 
-(ert-deftest var-extraction-new ()
+(ert-deftest pyimport-var-extraction-new ()
   "Ensure we parse pyflakes output for recent pyflakes versions."
   (should
    (equal
     (pyimport--extract-unused-var "'foo.bar' imported but unused")
     "bar")))
 
-(ert-deftest remove-import-case-sensitive ()
+(ert-deftest pyimport-remove-import-case-sensitive ()
   "Ensure we remove imports case-sensitively"
   (with-temp-buffer
     (insert "import cPickle as pickle")
@@ -24,7 +24,7 @@
     (should
      (equal (buffer-string) ""))))
 
-(ert-deftest remove-import-extra-whitespace ()
+(ert-deftest pyimport-remove-import-extra-whitespace ()
   "Ensure we remove imports correctly even when there's extra whitespace."
   (with-temp-buffer
     (insert "from   foo  import   bar")
@@ -32,7 +32,7 @@
     (should
      (equal (buffer-string) ""))))
 
-(ert-deftest remove-import-as ()
+(ert-deftest pyimport-remove-import-as ()
   "Ensure we remove imports correctly when there are aliases."
   (with-temp-buffer
     (insert "from foo import bar as newname")
@@ -40,7 +40,7 @@
     (should
      (equal (buffer-string) ""))))
 
-(ert-deftest remove-import-as-alias ()
+(ert-deftest pyimport-remove-import-as-alias ()
   "Ensure we remove imports correctly when there are aliases."
   (with-temp-buffer
     (insert "import foo.bar as bar")
@@ -48,7 +48,7 @@
     (should
      (equal (buffer-string) ""))))
 
-(ert-deftest remove-on-line-first ()
+(ert-deftest pyimport-remove-on-line-first ()
   "We should remove the first occurrence, if present."
   (with-temp-buffer
     (insert "foo bar baz bar")
@@ -56,7 +56,7 @@
     (should
      (equal (buffer-string) "foo  baz bar"))))
 
-(ert-deftest import-lines ()
+(ert-deftest pyimport-import-lines ()
   (with-temp-buffer
     (insert "from foo import bar\n"
             "import baz\n"
@@ -68,7 +68,7 @@
                "import baz"
                "import quz.zox")))))
 
-(ert-deftest import-lines-correct-buffer ()
+(ert-deftest pyimport-import-lines-correct-buffer ()
   "Ensure we extract lines from the buffer passed in."
   (let ((buf (get-buffer-create "my-buffer")))
     (with-current-buffer buf
@@ -81,7 +81,7 @@
           (should (equal (get-text-property 0 'pyimport-path (-first-item lines))
                          "my-buffer")))))))
 
-(ert-deftest extract-unused-var ()
+(ert-deftest pyimport-extract-unused-var ()
   (should
    (equal
     (pyimport--extract-unused-var "'foo' imported but unused")
@@ -95,7 +95,7 @@
     (pyimport--extract-unused-var "'foo.bar as xxx' imported but unused")
     "xxx")))
 
-(ert-deftest same-module ()
+(ert-deftest pyimport-same-module ()
   (should
    (pyimport--same-module
     "from foo import x"
@@ -105,7 +105,7 @@
          "from foo import x"
          "from foo.bar import x"))))
 
-(ert-deftest buffers-in-mode ()
+(ert-deftest pyimport-buffers-in-mode ()
   (let ((buf1 (get-buffer-create "buf1"))
         (buf2 (get-buffer-create "buf2")))
     (shut-up
@@ -123,7 +123,7 @@
     (kill-buffer buf1)
     (kill-buffer buf2)))
 
-(ert-deftest for-each-line ()
+(ert-deftest pyimport-for-each-line ()
   (let (result-lines)
     (with-temp-buffer
       (insert "a\nb\nc\nd")
@@ -134,7 +134,7 @@
     (should
      (equal result-lines '("a" "b" "c" "d")))))
 
-(ert-deftest insert-import-simple ()
+(ert-deftest pyimport-insert-import-simple ()
   "Test inserting an import."
   (with-temp-buffer
     (pyimport--insert-import "from foo import x")
@@ -142,7 +142,7 @@
      (equal (buffer-string)
             "from foo import x\n"))))
 
-(ert-deftest insert-import-with-existing ()
+(ert-deftest pyimport-insert-import-with-existing ()
   "Test inserting an import when we already have imports from that module."
   (with-temp-buffer
     (insert "from foo import x\n")
@@ -151,7 +151,7 @@
      (equal (buffer-string)
             "from foo import x, y\n"))))
 
-(ert-deftest insert-import-duplicate ()
+(ert-deftest pyimport-insert-import-duplicate ()
   "Test inserting an import when we already have that symbol imported"
   (with-temp-buffer
     (insert "from foo import x\n")
@@ -160,7 +160,7 @@
      (equal (buffer-string)
             "from foo import x\n"))))
 
-(ert-deftest extract-simple-import ()
+(ert-deftest pyimport-extract-simple-import ()
   (should
    (equal
     (pyimport--extract-simple-import "from foo import bar, xxx" "bar")
