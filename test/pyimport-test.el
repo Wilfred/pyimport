@@ -185,3 +185,12 @@
    (equal
     (pyimport--extract-simple-import "import foo as bar" "bar")
     "import foo as bar")))
+
+(ert-deftest pyimport-buffer-lines ()
+  "We should ignore multiline strings, as they may not contain valid imports."
+  (let (lines)
+    (with-temp-buffer
+      (insert "x = \"\"\"\nfrom foo\n\"\"\"\n")
+      (setq lines (pyimport--buffer-lines (current-buffer))))
+    (should (not
+             (-contains-p lines "from foo")))))

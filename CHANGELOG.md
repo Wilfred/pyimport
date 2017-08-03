@@ -6,6 +6,8 @@
   unsaved or not visiting a file.
 * `pyimport-insert-missing` now steps over shebangs when choosing
   where to insert new imports.
+* Fixed an issue with `pyimport-insert-missing` using the contents of
+  multiline strings that looked like imports.
 
 ## v1.0
 

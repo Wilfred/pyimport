@@ -46,9 +46,22 @@
   "Return non-nil if the current line is the last in the buffer."
   (looking-at (rx (0+ not-newline) buffer-end)))
 
+(defun pyimport--in-string-p ()
+  "Return non-nil if point is inside a string."
+  (nth 3 (syntax-ppss)))
+
 (defun pyimport--buffer-lines (buffer)
-  (with-current-buffer buffer
-    (s-split "\n" (buffer-string))))
+  "Return all the lines in BUFFER, ignoring lines that are within a string."
+  (let (lines)
+    (with-current-buffer buffer
+      (save-excursion
+        (goto-char (point-min))
+        (unless (pyimport--in-string-p)
+          (push (pyimport--current-line) lines))
+        (while (zerop (forward-line 1))
+          (unless (pyimport--in-string-p)
+            (push (pyimport--current-line) lines)))))
+    (nreverse lines)))
 
 (defun pyimport--import-lines (buffer)
   "Return all the lines in this Python BUFFER that look like imports."
