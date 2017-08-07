@@ -4,6 +4,8 @@
   wrong buffer where it found the import.
 * `pyimport-remove-unused` now works on all buffers, even if they're
   unsaved or not visiting a file.
+* `pyimport-insert-missing` now steps over shebangs when choosing
+  where to insert new imports.
 
 ## v1.0
 

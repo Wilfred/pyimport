@@ -115,7 +115,17 @@ To terminate the loop early, throw 'break."
       ;; LINE as-is.
       (save-excursion
         (goto-char (point-min))
-        (insert line "\n")))))
+        (let ((insert-pos (point)))
+          (catch 'found
+            ;; Find the first non-comment non-blank line.
+            (dotimes (_ 30)
+              (forward-line 1)
+              (when (and (not (looking-at "\n"))
+                         (not (looking-at "#"))
+                         (not (looking-at "\"")))
+                (setq insert-pos (point))
+                (throw 'found nil))))
+          (insert line "\n"))))))
 
 (defun pyimport--get-alias (import-as symbol)
   "Return the original symbol name, the aliased name, or nil, if
