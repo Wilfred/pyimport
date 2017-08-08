@@ -40,18 +40,27 @@
 
 (defun pyimport--current-line ()
   "Return the whole line at point, excluding the trailing newline."
-  (save-excursion
-    (let ((line-start (progn (beginning-of-line) (point)))
-          (line-end (progn (end-of-line) (point))))
-      (buffer-substring line-start line-end))))
+  (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
 
 (defun pyimport--last-line-p ()
   "Return non-nil if the current line is the last in the buffer."
   (looking-at (rx (0+ not-newline) buffer-end)))
 
+(defun pyimport--in-string-p ()
+  "Return non-nil if point is inside a string."
+  (nth 3 (syntax-ppss)))
+
 (defun pyimport--buffer-lines (buffer)
-  (with-current-buffer buffer
-    (s-split "\n" (buffer-string))))
+  "Return all the lines in BUFFER, ignoring lines that are within a string."
+  (let (lines)
+    (with-current-buffer buffer
+      (save-excursion
+        (goto-char (point-min))
+        (while (not (eobp))
+          (unless (pyimport--in-string-p)
+            (push (pyimport--current-line) lines))
+          (forward-line 1))))
+    (nreverse lines)))
 
 (defun pyimport--import-lines (buffer)
   "Return all the lines in this Python BUFFER that look like imports."
@@ -309,7 +318,7 @@ Required for `pyimport-remove-unused'.")
            (import-lines (--filter (s-ends-with-p "imported but unused" (-last-item it)) lines))
            (unused-imports (--map (cons (read (nth 1 it))
                                         (pyimport--extract-unused-var (nth 2 it))) import-lines)))
-      ;; Iterate starting form the last unused import, so our line
+      ;; Iterate starting from the last unused import, so our line
       ;; numbers stay correct, even when we delete lines.
       (--each (reverse unused-imports)
         (-let [(line . var ) it]
