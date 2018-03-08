@@ -129,18 +129,11 @@ To terminate the loop early, throw 'break."
             ;; Find the first non-comment non-blank line.
             (dotimes (_ 30)
               (forward-line 1)
-              (let* ((ppss (syntax-ppss))
-                     ;; Since point is at the start of the line, we
-                     ;; are outside single line comments or
-                     ;; strings. However, we might be in a multiline
-                     ;; comment.
-                     (string-comment-p (nth 8 ppss)))
-                (when (and (not (looking-at "\n"))
-                           (not (looking-at "#"))
-                           (not (looking-at "\""))
-                           (or (not string-comment-p) t))
-                  (setq insert-pos (point))
-                  (throw 'found nil)))))
+              (when (and (not (looking-at "\n"))
+                         (not (looking-at "#"))
+                         (not (looking-at "\"")))
+                (setq insert-pos (point))
+                (throw 'found nil))))
           (insert line "\n"))))))
 
 (defun pyimport--get-alias (import-as symbol)

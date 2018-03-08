@@ -160,15 +160,6 @@
      (equal (buffer-string)
             "from foo import x\n"))))
 
-(ert-deftest pyimport-insert-import-module-docstring ()
-  "Test inserting an import when the module starts with a docstring."
-  (with-temp-buffer
-    (insert "\"\"\"hello world.\n\n\"\"\"\n\nfrom bar import y")
-    (pyimport--insert-import "from foo import x")
-    (should
-     (equal (buffer-string)
-            "\"\"\"hello world.\n\n\"\"\"\n\nfrom foo import x\nfrom bar import y"))))
-
 (ert-deftest pyimport-extract-simple-import ()
   (should
    (equal
