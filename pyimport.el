@@ -138,7 +138,7 @@ To terminate the loop early, throw 'break."
                 (when (and (not (looking-at "\n"))
                            (not (looking-at "#"))
                            (not (looking-at "\""))
-                           (or (not string-comment-p) t))
+                           (not string-comment-p))
                   (setq insert-pos (point))
                   (throw 'found nil)))))
           (insert line "\n"))))))
