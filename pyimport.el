@@ -321,7 +321,7 @@ Required for `pyimport-remove-unused'.")
     (kill-buffer "*pyimport*")
 
     (let* ((raw-lines (s-split "\n" (s-trim flycheck-output)))
-           (lines (--map (s-split ":" it) raw-lines))
+           (lines (--map (s-split-up-to ":" it 2) raw-lines))
            (import-lines (--filter (s-ends-with-p "imported but unused" (-last-item it)) lines))
            (unused-imports (--map (cons (read (nth 1 it))
                                         (pyimport--extract-unused-var (nth 2 it))) import-lines)))
