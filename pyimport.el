@@ -173,10 +173,10 @@ return 'from foo import y as z'."
         (when matching-aliases
           (format "import %s" (nth 0 matching-aliases))))))))
 
-(defun pyimport--buffers-in-mode (mode)
-  "Return a list of all the buffers with major mode MODE."
+(defun pyimport--buffers-in-mode (modes)
+  "Return a list of all the buffers with major modes MODES."
   (--filter (with-current-buffer it
-              (eq major-mode mode))
+              (member major-mode modes))
             (buffer-list)))
 
 (defun pyimport--syntax-highlight (str)
@@ -204,7 +204,7 @@ This is a simple heuristic: we just look for imports in all open Python buffers.
       (user-error "No symbol at point"))
     (setq symbol (substring-no-properties symbol))
     ;; Find all the import lines in all Python buffers
-    (dolist (buffer (pyimport--buffers-in-mode 'python-mode))
+    (dolist (buffer (pyimport--buffers-in-mode '(python-mode python-ts-mode)))
       (dolist (line (pyimport--import-lines buffer))
         (-if-let (import (pyimport--extract-simple-import line symbol))
             (push import matching-lines))))
